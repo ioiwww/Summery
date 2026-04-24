@@ -1,12 +1,12 @@
-// التعديل هنا: استدعاء الجزء الصحيح من المكتبة
-const { Lens } = require('chrome-lens-ocr'); 
+// جرب هذه الطريقة لأن المكتبة قد تُصدر الكائن مباشرة
+const LensModule = require('chrome-lens-ocr');
+const Lens = LensModule.Lens || LensModule; // ضمان الوصول للكلاس الصحيح
 const fs = require('fs');
 const path = require('path');
 const { fromPath } = require('pdf2pic');
 
 async function processPdfs() {
-    // ملاحظة: إذا استمر الخطأ، جرب إزالة ('ar') وتركها فارغة Lens() 
-    // لأن المحرك يتعرف على اللغة تلقائياً في النسخ الجديدة
+    // إذا استمر الخطأ هنا، سنعرف أن المشكلة في طريقة الاستدعاء
     const lens = new Lens(); 
     const inputDir = './pdfs';
     const outputDir = './Extracted_Texts';
@@ -32,20 +32,20 @@ async function processPdfs() {
             const storeAsImage = fromPath(path.join(inputDir, file), options);
             const pageRes = await storeAsImage(1); 
 
-            // استدعاء الفحص
+            // استخدام المحرك لسحب النص
             const result = await lens.scanByFile(pageRes.path);
             
-            // استخراج النص العربي
+            // دمج النصوص المستخرجة (بما فيها العربي)
             const text = result.segments.map(s => s.text).join(' ');
             
-            fs.writeFileSync(path.join(outputDir, file + '.txt'), text);
-            console.log(`✅ Done: ${file}`);
+            fs.writeFileSync(path.join(outputDir, file.replace('.pdf', '.txt')), text);
+            console.log(`✅ تم استخراج النص بنجاح: ${file}`);
             
-            // تنظيف الملف المؤقت
+            // حذف الصورة المؤقتة
             if (fs.existsSync(pageRes.path)) fs.unlinkSync(pageRes.path);
             
         } catch (e) {
-            console.error(`❌ Error in ${file}:`, e.message);
+            console.error(`❌ خطأ في الملف ${file}:`, e.message);
         }
     }
 }
