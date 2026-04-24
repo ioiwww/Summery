@@ -1,4 +1,4 @@
-name: Arabic Text Extraction
+name: Arabic OCR Extraction
 on: [push, workflow_dispatch]
 
 jobs:
@@ -14,8 +14,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install playwright pdf2image
-          playwright install chromium
+          pip install easyocr pdf2image
+          sudo apt-get update
           sudo apt-get install -y poppler-utils
 
       - name: Run Extraction
