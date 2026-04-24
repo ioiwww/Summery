@@ -1,4 +1,4 @@
-name: Arabic Text Extraction
+name: Arabic Text Extraction Ruby
 on: [push, workflow_dispatch]
 
 jobs:
@@ -6,21 +6,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y graphicsmagick ghostscript
+          sudo apt-get install -y poppler-utils
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: 20
+          ruby-version: '3.2'
 
-      - name: Install JS Packages
-        run: npm install chrome-lens-ocr pdf2pic
+      - name: Install Gems
+        run: gem install google-lens-ocr
 
       - name: Run Extraction
-        run: node extract.js
+        run: ruby extract.rb
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
