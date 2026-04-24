@@ -1,4 +1,4 @@
-name: Arabic Text Extraction Ruby
+name: Arabic Extraction Python
 on: [push, workflow_dispatch]
 
 jobs:
@@ -12,19 +12,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          ruby-version: '3.2'
+          python-version: '3.10'
 
-      - name: Install Gems
-        run: gem install google-lens-ocr
+      - name: Install Python Packages
+        run: pip install py-google-lens pdf2image
 
       - name: Run Extraction
-        run: ruby extract.rb
+        run: python extract.py
 
       - name: Upload Results
         uses: actions/upload-artifact@v4
         with:
-          name: my-extracted-notes
+          name: extracted-texts
           path: Extracted_Texts/
