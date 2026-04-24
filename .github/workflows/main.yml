@@ -1,4 +1,4 @@
-name: Arabic Extraction Python
+name: Arabic Text Extraction
 on: [push, workflow_dispatch]
 
 jobs:
@@ -7,18 +7,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Python Packages
-        run: pip install py-google-lens pdf2image
+      - name: Install Dependencies
+        run: |
+          pip install playwright pdf2image
+          playwright install chromium
+          sudo apt-get install -y poppler-utils
 
       - name: Run Extraction
         run: python extract.py
